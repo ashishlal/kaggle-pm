@@ -53,6 +53,47 @@ print(w1)
 print('\n')
 print(w2)
 
+#################################
+# Naive Bayes MultinomialNB
+################################
+
+Y = df['y'].values
+
+nb = MultinomialNB()
+Y_pred =nb.fit(abs(df_train), Y).predict_proba(df_test)
+
+Y_pred = Y_pred.clip(min=0.05, max=0.95)
+submission = pd.DataFrame(Y_pred, columns=['class'+str(c+1) for c in range(9)])
+submission['ID'] = pid
+submission.to_csv('../submissions/sub_stage2_nb.csv', index=False)
+
+# get the CV score
+Y_pred =nb.fit(abs(x1), y1).predict_proba(x2)
+
+score2 = log_loss(y2, Y_pred, labels=range(1,10))
+print('stage2 NB CV multi_log_loss: {}'.format(score2))
+
+fscore = f1_score(y2, Y_pred.argmax(axis=1)+1, labels = list(range(1,10)), average='micro')
+print('stage2 NB CV  f1_score: {}'.format(fscore))
+
+acc = accuracy_score(y2, Y_pred.argmax(axis=1)+1)
+print('stage2 NB CV accuracy: {}'.format(acc))
+
+print(confusion_matrix(y2, Y_pred.argmax(axis=1)+1, labels = list(range(1,10))))
+
+# stage2 NB CV multi_log_loss: 29.930365161230498
+# stage2 NB CV f1_score: 0.13008130081300814
+# stage2 NB CV accuracy: 0.13008130081300814
+# [[ 9  2 37 10 15  6  3 43  8]
+#  [ 1  7 31  3  7 11  9 28  3]
+#  [ 1  0 12  0  1  0  1  4  0]
+#  [ 8  0 64 11  6  5  2 38 16]
+#  [ 4  1 17  2 10  1  2 13  3]
+#  [ 2  4 12  2  5 14  3 14  3]
+#  [ 9  9 53  5  7 17 28 81  2]
+#  [ 1  0  1  0  0  0  0  2  0]
+#  [ 1  0  3  0  0  0  0  2  3]]
+
 ############################
 # OneVsOne
 ############################
@@ -153,41 +194,6 @@ submission['ID'] = pid
 submission.to_csv('../submissions/sub_ovr.csv', index=False)
 # 2.31000 on stage2 private LB, 1.89228 on stage2 public LB
 
-
-#################################
-# Naive Bayes MultinomialNB
-################################
-
-Y = df['y'].values
-
-ovo = MultinomialNB()
-Y_pred =ovo.fit(abs(df_train), Y).predict_proba(df_test)
-
-Y_pred = Y_pred.clip(min=0.05, max=0.95)
-
-score2 = log_loss(test_labels, Y_pred, labels=range(1,10))
-print('stage2 CV multi_log_loss: {}'.format(score2))
-
-fscore = f1_score(test_labels, Y_pred.argmax(axis=1)+1, labels = list(range(1,10)), average='micro')
-print('stage2 CV f1_score: {}'.format(fscore))
-
-acc = accuracy_score(test_labels, Y_pred.argmax(axis=1)+1)
-print('stage2 CV accuracy: {}'.format(acc))
-
-print(confusion_matrix(test_labels, Y_pred.argmax(axis=1)+1, labels = list(range(1,10))))
-
-# stage1 partial multi_log_loss: 2.9597867651212026
-# stage1 partial f1_score: 0.11413043478260869
-# stage1 partial accuracy: 0.11413043478260869
-# [[ 9  0 23  6  0 19  3  9 25]
-#  [ 1  4 15  0  2 11  5  0  8]
-#  [ 2  0  4  0  0  0  0  0  1]
-#  [ 3  1 26  5  0  4  2  2 22]
-#  [ 2  0 10  0  2  8  2  0  1]
-#  [ 1  0  7  0  0  5  1  1  7]
-#  [ 1  6 19  1  5 14 10  6 39]
-#  [ 0  0  0  0  0  0  0  0  2]
-#  [ 0  0  3  0  0  0  0  0  3]]
 
 
 
