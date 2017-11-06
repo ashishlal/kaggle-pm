@@ -66,6 +66,7 @@ Y_pred = Y_pred.clip(min=0.05, max=0.95)
 submission = pd.DataFrame(Y_pred, columns=['class'+str(c+1) for c in range(9)])
 submission['ID'] = pid
 submission.to_csv('../submissions/sub_stage2_nb.csv', index=False)
+# 2.94250 on stage2 private LB, 2.91277 opn stage2 public LB
 
 # get the CV score
 Y_pred =nb.fit(abs(x1), y1).predict_proba(x2)
