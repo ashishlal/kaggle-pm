@@ -94,7 +94,7 @@ class pm_numeric_cols(be, tm):
     def fit(self, x, y=None):
         return self
     def transform(self, x):
-        x = x.drop(['Gene', 'Variation', 'ID','Text', 'GeneVar'],axis=1).values
+        x = x.drop(['Gene', 'Variation', 'ID','Text'],axis=1).values
         return x
 
 class pm_txt_col(be, tm):
@@ -109,24 +109,22 @@ class pm_txt_col(be, tm):
 def get_fp(fp):
     fp = Pipeline([
         ('union', FeatureUnion(
-            n_jobs = -1,
+            n_jobs = 1,
             transformer_list = [
                 ('standard', pm_numeric_cols()),
                 ('pi1', Pipeline([('Gene', pm_txt_col('Gene')), 
-                                           ('count_Gene', CountVectorizer(analyzer=u'char',ngram_range=(1, 3))), 
+                                           ('count_Gene', CountVectorizer(analyzer=u'char',ngram_range=(1, 8))), 
                                            ('tsvd1', TruncatedSVD(n_components=20, n_iter=25, random_state=12))])),
                 ('pi2', Pipeline([('Variation', pm_txt_col('Variation')), 
-                                           ('count_Variation', CountVectorizer(analyzer=u'char',ngram_range=(1, 3))), 
-                                           ('tsvd2', TruncatedSVD(n_components=20, n_iter=25, random_state=12))])),
-                ('pi3', Pipeline([('GeneVar', pm_txt_col('GeneVar')), 
-                                           ('count_GeneVar', CountVectorizer(analyzer=u'char', ngram_range=(1, 3))), 
-                                           ('tsvd2', TruncatedSVD(n_components=20, n_iter=25, random_state=12))])),
-                
-                ('pi4', Pipeline([('Text', pm_txt_col('Text')), 
-                           ('tfidf_Text', TfidfVectorizer(ngram_range=(1, 3))), 
-                           ('tsvd3', TruncatedSVD(n_components=300, n_iter=25, random_state=12))]))
-
-
+                                           ('count_Variation', CountVectorizer(analyzer=u'char',ngram_range=(1, 8))), 
+                                           ('tsvd2', TruncatedSVD(n_components=20, n_iter=25, random_state=12))])),  
+                ('pi4',Pipeline([('Text', pm_txt_col('Text')), 
+                                       ('hv', HashingVectorizer(decode_error='ignore', n_features=2 ** 16,
+                                                                non_negative=True, 
+                                                                ngram_range=(1, 3))),
+                                       ('tfidf_Text', TfidfTransformer()), 
+                                       ('tsvd4', TruncatedSVD(n_components=300, n_iter=25, 
+                                                                            random_state=12))]))
 
             ])
         )])
