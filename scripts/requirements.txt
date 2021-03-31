@@ -35,7 +35,7 @@ kaggle-cli==0.12.10
 Kaggler==0.5.2
 Keras==2.0.2
 lightgbm==2.0.10
-lxml==4.0.0
+lxml==4.6.3
 MarkupSafe==1.0
 matplotlib==2.0.0
 MechanicalSoup==0.8.0
