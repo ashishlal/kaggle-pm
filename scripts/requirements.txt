@@ -39,7 +39,7 @@ lxml==4.0.0
 MarkupSafe==1.0
 matplotlib==2.0.0
 MechanicalSoup==0.8.0
-mistune==0.7.4
+mistune==2.0.3
 ml-metrics==0.1.4
 mlxtend==0.8.0
 mpmath==1.0.0
